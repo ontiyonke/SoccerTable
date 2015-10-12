@@ -6,9 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-/**
- * Soccer team.
- */
+
 class Team{
 
     private int points = 0;
@@ -41,9 +39,6 @@ class Team{
 }
 
 
-/**
- * Soccer team.
- */
 class FixtureResults{
     static final int DRAW_POINTS = 1;
     static final int WIN_POINTS = 3;
@@ -117,17 +112,15 @@ public class SoccerTable{
     public static void main(String[] args) {
         SoccerTable table = new SoccerTable();
         table.setFileName(args);
-        table.readFile();
+        table.displayTableRows();
     }
 
     public void setFileName(String[] args){
         if (args.length > 0) {
             this.fileName = args[0];
         } else {
-            //this.fileName = "sample-input.txt"; current path lookup fails
-            //this.fileName = "/home/ontiyonke/personal/SoccerTable/sample-input-2.txt";
-//            System.err.println("File containing match results is required.");
-//            System.exit(0);
+            System.err.println("File containing match results is required.");
+            System.exit(0);
         }
     }
 
@@ -165,7 +158,7 @@ public class SoccerTable{
         }
     }
 
-    public void readFile(){
+    public void displayTableRows(){
         this.setInFile(this.getFileName());
         System.out.println(this.getFileName());
         try {
@@ -179,9 +172,9 @@ public class SoccerTable{
                     this.addTeam(team);
                 }
             }
-            //this.getRows().forEach((k, v) -> System.out.printf("Key : %s and Value: %s %n", k, v));
-            System.out.printf("entries : %s", this.entriesSortedByValues(this.getRows()));
-//            System.out.println(this.entriesSortedByValues(this.getRows()));
+
+            this.displayRows();
+
             in.close() ;
         }
         catch ( UnsupportedEncodingException e )
@@ -197,29 +190,31 @@ public class SoccerTable{
         }
     }
 
-    public void displayTeams(){
+    public void displayRows(){
         this.populateTableRows();
         Map<String, Integer> sortedMap = new TreeMap();
         sortedMap = this.sortByValue(this.getRows());
-        sortedMap.forEach((k, v) -> System.out.printf("Key : %s and Value: %s %n", k, v));
-
-        Enumeration<String> strEnum = Collections.enumeration(sortedMap.keySet());
+        sortedMap.forEach((k, v) -> System.out.printf("%s, %d pts %n", k, v));
     }
 
-    public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-                new Comparator<Map.Entry<K,V>>() {
-                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-                        int res = e2.getValue().compareTo(e1.getValue());
-                        return res != 0 ? res : 1; // Special fix to preserve items with equal values
-                    }
-                }
-        );
-        sortedEntries.addAll(map.entrySet());
-        return sortedEntries;
-    }
+//    public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+//        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+//                new Comparator<Map.Entry<K,V>>() {
+//                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+//                        int res = e2.getValue().compareTo(e1.getValue());
+//                        return res != 0 ? res : 1; // Special fix to preserve items with equal values
+//                    }
+//                }
+//        );
+//        sortedEntries.addAll(map.entrySet());
+//        return sortedEntries;
+//    }
 
-
+    /**
+     * Currently this sorts by value which is the team's point then by key (team name) in ascending order.
+     *
+     * TODO: Olwethu: 12/10/2015: change to descending order
+     */
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map )
     {
         Map<K,V> result = new LinkedHashMap<>();
