@@ -1,7 +1,5 @@
 ## Soccer League Table
 
-* Table rows sorting should be in descending order.
-
 * Write tests.
 
 * Class Documentation.

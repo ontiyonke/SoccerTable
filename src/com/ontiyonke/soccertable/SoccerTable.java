@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 
 class Team{
@@ -173,7 +172,10 @@ public class SoccerTable{
                 }
             }
 
-            this.displayRows();
+            // call method to construct the table row, a row consists of a team and points
+            this.populateTableRows();
+
+            this.displaySortedTableRows(this.sortTableRows(this.getRows()));
 
             in.close() ;
         }
@@ -190,39 +192,46 @@ public class SoccerTable{
         }
     }
 
-    public void displayRows(){
-        this.populateTableRows();
-        Map<String, Integer> sortedMap = new TreeMap();
-        sortedMap = this.sortByValue(this.getRows());
-        sortedMap.forEach((k, v) -> System.out.printf("%s, %d pts %n", k, v));
+    public void displaySortedTableRows(Map<String, Integer> sortedMap){
+        int rank = 1;
+        String points_string;
+        Set set = sortedMap.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            points_string = ((Integer)entry.getValue() <= 1) ? "pt" : "pts";
+            System.out.printf("%d. %s, %d %s\n", rank, entry.getKey(), entry.getValue(), points_string);
+            rank += 1;
+        }
     }
 
-//    public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-//        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-//                new Comparator<Map.Entry<K,V>>() {
-//                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-//                        int res = e2.getValue().compareTo(e1.getValue());
-//                        return res != 0 ? res : 1; // Special fix to preserve items with equal values
-//                    }
-//                }
-//        );
-//        sortedEntries.addAll(map.entrySet());
-//        return sortedEntries;
-//    }
-
     /**
-     * Currently this sorts by value which is the team's point then by key (team name) in ascending order.
-     *
-     * TODO: Olwethu: 12/10/2015: change to descending order
+     * This method accepts an unsorted map and applies a value comparator then return a tree map ordered in descending
+     * order.
      */
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map )
-    {
-        Map<K,V> result = new LinkedHashMap<>();
-        Stream<Map.Entry<K,V>> st = map.entrySet().stream();
+    public static TreeMap<String, Integer> sortTableRows (Map<String, Integer> map) {
+        ValueComparator vc =  new ValueComparator(map);
+        TreeMap<String,Integer> sortedMap = new TreeMap(vc);
+        sortedMap.putAll(map);
+        return sortedMap;
+    }
+}
 
-        st.sorted(Comparator.comparing(e -> e.getValue()))
-                .forEach(e -> result.put(e.getKey(), e.getValue()));
 
-        return result;
+class ValueComparator implements Comparator<String> {
+
+    Map<String, Integer> map;
+
+    public ValueComparator(Map<String, Integer> base) {
+        this.map = base;
+    }
+
+    public int compare(String a, String b) {
+        if (map.get(a) > map.get(b)) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
     }
 }
