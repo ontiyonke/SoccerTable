@@ -199,7 +199,7 @@ public class SoccerTable{
         Iterator iterator = set.iterator();
         while(iterator.hasNext()) {
             Map.Entry entry = (Map.Entry)iterator.next();
-            points_string = ((Integer)entry.getValue() <= 1) ? "pt" : "pts";
+            points_string = ((Integer)entry.getValue() == 1) ? "pt" : "pts";
             System.out.printf("%d. %s, %d %s\n", rank, entry.getKey(), entry.getValue(), points_string);
             rank += 1;
         }
